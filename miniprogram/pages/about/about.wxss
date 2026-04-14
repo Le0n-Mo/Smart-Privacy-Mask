@@ -1,0 +1,73 @@
+.container { 
+  padding: 30rpx; 
+  background: #f8f8f8; 
+  /* 关键：确保容器至少占满整个屏幕高度 */
+  min-height: 100vh;
+  box-sizing: border-box;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; 
+}
+
+.card { 
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff; 
+  padding: 40rpx; 
+  border-radius: 24rpx; 
+  margin-bottom: 25rpx; 
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05); 
+}
+
+.title { 
+  font-size: 32rpx; 
+  font-weight: bold; 
+  color: #333; 
+  display: block; 
+  margin-bottom: 24rpx; 
+  border-left: 8rpx solid #07c160; 
+  padding-left: 20rpx;
+}
+
+.content { 
+  font-size: 27rpx; 
+  color: #666; 
+  line-height: 1.7; 
+  text-align: justify;
+}
+
+.tag-box { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 15rpx; 
+}
+
+.tag { 
+  font-size: 22rpx; 
+  background: #f1f1f1; 
+  color: #555; 
+  padding: 8rpx 20rpx; 
+  border-radius: 10rpx; 
+  border: 1rpx solid #e0e0e0;
+}
+
+.link { 
+  color: #07c160; 
+  font-size: 26rpx;
+  text-decoration: underline; 
+  word-break: break-all; 
+}
+
+/* 核心修改：页脚样式 */
+.footer { 
+  display: block; 
+  text-align: center; 
+  font-size: 22rpx; 
+  color: #cccccc; 
+  
+  /* 关键：自动填充上方空间，将自己推向最底部 */
+  margin-top: auto; 
+  /* 留出一些底部边距，不要紧贴底部栏 */
+  padding-bottom: 40rpx; 
+}

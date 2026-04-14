@@ -1,0 +1,57 @@
+<view class="workspace">
+
+  <view class="status-bar">
+    <text class="status-text">{{isModelReady ? '● AI 引擎就绪' : '○ 引擎加载中...'}}</text>
+    <text class="img-counter" wx:if="{{imageList.length > 0}}">{{currentIndex + 1}} / {{imageList.length}}</text>
+  </view>
+
+  <swiper class="image-swiper" 
+          current="{{currentIndex}}" 
+          bindchange="onSwiperChange"
+          disable-touch-swipe="{{isManualMode}}"
+          >
+    <block wx:for="{{imageList}}" wx:key="*this">
+      <swiper-item>
+        <view class="canvas-container">
+          <canvas 
+  type="2d" 
+  id="canvas-{{index}}" 
+  class="main-canvas"
+  catchtouchstart="{{isManualMode ? 'touchStart' : ''}}"
+  catchtouchmove="{{isManualMode ? 'touchMove' : ''}}"
+
+  disable-scroll="{{isManualMode}}"
+></canvas>
+        </view>
+      </swiper-item>
+    </block>
+
+    <swiper-item wx:if="{{imageList.length ===    0}}">
+      <view class="empty-state">
+        <image src="/assets/shield.png"     class="empty-icon"></image>
+        <text>请点击下方按钮上传图片(最多九张)</text>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <view class="action-panel">
+    <view class="button-matrix">
+
+      <view class="grid-btn btn-upload" bindtap="chooseImage">
+        <text>上传图片</text>
+      </view>
+
+      <view class="grid-btn btn-ai {{imageList.length === 0 ? 'disabled' : ''}}" bindtap="runInferenceAll">
+        <text>智能脱敏</text>
+      </view>
+
+      <view class="grid-btn btn-save {{imageList.length === 0 ? 'disabled' : ''}}" bindtap="showExportMenu">
+       <text>保存图片</text>
+      </view>
+
+      <view class="grid-btn btn-manual {{isManualMode ? 'active' : ''}} {{imageList.length === 0 ? 'disabled' : ''}}" bindtap="toggleManualMode">
+        <text>{{isManualMode ? '✍️ 手动模式' : '🖐️ 手动打码'}}</text>
+      </view>
+    </view>
+  </view>
+</view>

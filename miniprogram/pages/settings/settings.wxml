@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="section-title">脱敏策略配置</view>
+  
+  <view class="card">
+    <view class="setting-item">
+      <view class="info">
+        <text class="label">姓名/名字</text>
+        <text class="desc">识别并遮盖人物姓名</text>
+      </view>
+      <switch checked="{{config.maskName}}" color="#07c160" bindchange="updateConfig" data-key="maskName"/>
+    </view>
+
+    <view class="setting-item">
+      <view class="info">
+        <text class="label">证件号码</text>
+        <text class="desc">身份证、银行卡等长数字</text>
+      </view>
+      <switch checked="{{config.maskId}}" color="#07c160" bindchange="updateConfig" data-key="maskId"/>
+    </view>
+
+    <view class="setting-item">
+      <view class="info">
+        <text class="label">联系方式</text>
+        <text class="desc">识别并遮盖手机、电话号码</text>
+      </view>
+      <switch checked="{{config.maskPhone}}" color="#07c160" bindchange="updateConfig" data-key="maskPhone"/>
+    </view>
+
+    <view class="setting-item">
+      <view class="info">
+        <text class="label">地理住址</text>
+        <text class="desc">识别并遮盖详细家庭/公司地址</text>
+      </view>
+      <switch checked="{{config.maskAddress}}" color="#07c160" bindchange="updateConfig" data-key="maskAddress"/>
+    </view>
+  </view>
+
+  <view class="tips">设置将自动保存，下次使用时依然有效。</view>
+</view>

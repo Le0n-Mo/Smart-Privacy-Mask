@@ -1,0 +1,92 @@
+.container {
+  padding: 60rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(to bottom, #ffffff, #f0f9f4);
+  min-height: 100vh;
+}
+
+.logo-box {
+  margin-top: 60rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-shield {
+  width: 120rpx;
+  height: 140rpx;
+  background-color: #07c160;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  margin-bottom: 20rpx;
+}
+
+.app-name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 4rpx;
+}
+
+.welcome-section {
+  margin-top: 80rpx;
+  text-align: center;
+}
+
+.title {
+  font-size: 56rpx;
+  font-weight: 800;
+  display: block;
+  color: #000;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #666;
+  margin-top: 10rpx;
+}
+
+.features {
+  margin-top: 100rpx;
+  width: 100%;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 20rpx 30rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+}
+
+.feature-item text {
+  font-size: 26rpx;
+  color: #444;
+  margin-left: 20rpx;
+}
+
+.start-btn {
+  margin-top: 80rpx;
+  width: 80% !important;
+  background-color: #07c160;
+  color: white;
+  border-radius: 50rpx;
+  font-weight: bold;
+  box-shadow: 0 10rpx 20rpx rgba(7, 193, 96, 0.2);
+}
+
+.footer {
+  margin-top: auto;
+  padding-bottom: 40rpx;
+  font-size: 22rpx;
+  color: #bbb;
+}
+
+.main-logo {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 20rpx;
+}

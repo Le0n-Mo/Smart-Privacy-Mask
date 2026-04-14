@@ -1,0 +1,31 @@
+<view class="container">
+  <!-- pages/home/home.wxml 修改 logo-box 部分 -->
+<view class="logo-box">
+  <image src="/assets/logo.png" class="main-logo" mode="aspectFit"></image>
+
+</view>
+
+  <view class="welcome-section">
+    <text class="title">欢迎使用</text>
+    <text class="subtitle">您的个人隐私守护专家</text>
+  </view>
+
+  <view class="features">
+    <view class="feature-item">
+      <icon type="success" size="20" color="#07c160"/>
+      <text>全本地处理，数据不上传服务器</text>
+    </view>
+    <view class="feature-item">
+      <icon type="success" size="20" color="#07c160"/>
+      <text>端侧AI情境感知，智能识别敏感点</text>
+    </view>
+    <view class="feature-item">
+      <icon type="success" size="20" color="#07c160"/>
+      <text>代码完全开源，安全透明可信</text>
+    </view>
+  </view>
+  
+  <view class="footer">
+    <text>© 2026 汕头大学本科毕业设计</text>
+  </view>
+</view>

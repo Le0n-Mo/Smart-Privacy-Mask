@@ -1,0 +1,29 @@
+<view class="container">
+  <!-- 项目介绍卡片 -->
+  <view class="card">
+    <text class="title">项目介绍</text>
+    <text class="content">基于情景感知的敏感信息自动打码系统设计与实现,本项目旨在利用端侧 AI 技术，在不上传任何图片数据的前提下，实现个人隐私文本信息的全本地化智能脱敏。</text>
+  </view>
+
+  <!-- 技术特性卡片：扩充了技术栈内容 -->
+  <view class="card">
+    <text class="title">技术栈</text>
+    <view class="tag-box">
+      <text class="tag">全本地处理</text>
+      <text class="tag">PP-OCRv3</text>
+      <text class="tag">ONNX Runtime</text>
+      <text class="tag">WASM 推理加速</text>
+      <text class="tag">情境感知算法</text>
+      <text class="tag">NCHW 预处理</text>
+    </view>
+  </view>
+
+  <!-- 开源地址卡片 -->
+  <view class="card" bindtap="copyLink">
+    <text class="title">开源地址 (点击复制)</text>
+    <text class="link">github.com/YourName/SmartRedact</text>
+  </view>
+
+  <!-- 页脚 -->
+  <text class="footer">Version 1.0.0</text>
+</view>
