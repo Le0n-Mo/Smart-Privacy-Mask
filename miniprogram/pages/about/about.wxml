@@ -21,7 +21,7 @@
   <!-- 开源地址卡片 -->
   <view class="card" bindtap="copyLink">
     <text class="title">开源地址 (点击复制)</text>
-    <text class="link">github.com/YourName/SmartRedact</text>
+    <text class="link">github.com/Le0n-Mo/Smart-Privacy-Mask</text>
   </view>
 
   <!-- 页脚 -->

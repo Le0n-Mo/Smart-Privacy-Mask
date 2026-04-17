@@ -5,7 +5,7 @@ Page({
 
   copyLink() {
     wx.setClipboardData({
-      data: 'https://github.com/YourName/SmartRedact',
+      data: 'https://github.com/Le0n-Mo/Smart-Privacy-Mask',
       success: () => wx.showToast({ title: '链接已复制' })
     })
   }
