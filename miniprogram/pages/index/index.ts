@@ -14,13 +14,6 @@ Page({
     isManualMode: false,
     detSession: null as any,
     recSession: null as any,
-    
-    // --- 实验参数：修改这里进行不同版本的对比实验 ---
-    // 0: 标准缩放 (Standard)
-    // 1: 灰度化处理 (Grayscale) - 去除颜色干扰
-    // 2: 线性对比度增强 (Contrast Enhancement)
-    // 3: 边缘锐化预处理 (Sharpening)
-    preprocessMethod: 3
   },
 
   onLoad() { this.prepareModels(); },
@@ -39,48 +32,23 @@ Page({
     } catch (e) { wx.hideLoading(); }
   },
 
-  // --- 核心实验函数：多版本图像预处理 ---
-  preprocessImage(imgData: any, method: number) {
-    const data = imgData.data;
-    const len = data.length;
-    const floatArray = new Float32Array(1 * 3 * imgData.height * imgData.width);
-    
-    const h = imgData.height;
-    const w = imgData.width;
-    let rIdx = 0, gIdx = h * w, bIdx = h * w * 2;
+  preprocessImage(imgData: any) {
+  const { data, width, height } = imgData;
+  const size = width * height;
+  const floatArray = new Float32Array(1 * 3 * size);
+  
+  // NCHW 内存布局索引
+  let rIdx = 0;
+  let gIdx = size;
+  let bIdx = size * 2;
 
-    for (let i = 0; i < len; i += 4) {
-      let r = data[i];
-      let g = data[i + 1];
-      let b = data[i + 2];
-
-      switch(method) {
-        case 1: // 灰度化处理：Y = 0.299R + 0.587G + 0.114B
-          const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-          r = g = b = gray;
-          break;
-        case 2: // 对比度增强：简单线性拉伸
-          r = Math.min(255, Math.max(0, (r - 128) * 1.2 + 128));
-          g = Math.min(255, Math.max(0, (g - 128) * 1.2 + 128));
-          b = Math.min(255, Math.max(0, (b - 128) * 1.2 + 128));
-          break;
-        case 3: // 均值归一化 (针对特定模型优化)
-          r = (r / 255.0 - 0.485) / 0.229;
-          g = (g / 255.0 - 0.456) / 0.224;
-          b = (b / 255.0 - 0.406) / 0.225;
-          break;
-        default: // 标准 0-1 归一化
-          r /= 255.0; g /= 255.0; b /= 255.0;
-      }
-
-      // 填充 NCHW 格式
-      if (method === 3) {
-        floatArray[rIdx++] = r; floatArray[gIdx++] = g; floatArray[bIdx++] = b;
-      } else {
-        floatArray[rIdx++] = r / 255.0; floatArray[gIdx++] = g / 255.0; floatArray[bIdx++] = b / 255.0;
-      }
-    }
-    return floatArray;
+  for (let i = 0; i < data.length; i += 4) {
+    // 模式 0 逻辑：像素值直接除以 255.0
+    floatArray[rIdx++] = data[i] / 255.0;     // R
+    floatArray[gIdx++] = data[i + 1] / 255.0; // G
+    floatArray[bIdx++] = data[i + 2] / 255.0; // B
+  }
+  return floatArray;
   },
 
   async processSingleImage(index: number) {
@@ -97,8 +65,7 @@ Page({
       offCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, inputSize, inputSize);
       const imgData = offCtx.getImageData(0, 0, inputSize, inputSize);
 
-      // 使用选择的预处理模式
-      const floatArray = this.preprocessImage(imgData, this.data.preprocessMethod);
+      const floatArray = this.preprocessImage(imgData);
 
       const detRes = await this.data.detSession.run({ 
         'x': { shape: [1, 3, inputSize, inputSize], data: floatArray.buffer, type: 'float32' } 
@@ -171,10 +138,10 @@ Page({
     const std = [0.229, 0.224, 0.225];
     
     const size = width * height;
-    // 注意：这里我们按照 B-G-R 的顺序填充 NCHW
+    // 按照 B-G-R 的顺序填充 NCHW
     for (let i = 0; i < size; i++) {
       // 这里的索引 i*4 分别是 R, G, B, A
-      // 我们存入 floatArray 的顺序是 B(Idx), G(Idx), R(Idx)
+      // 存入 floatArray 的顺序是 B(Idx), G(Idx), R(Idx)
       floatArray[i + size * 0] = ((data[i * 4 + 2] / 255.0) - mean[2]) / std[2]; // B
       floatArray[i + size * 1] = ((data[i * 4 + 1] / 255.0) - mean[1]) / std[1]; // G
       floatArray[i + size * 2] = ((data[i * 4 + 0] / 255.0) - mean[0]) / std[0]; // R
@@ -238,7 +205,6 @@ Page({
         if (mapData[y * mapSize + x] > 0.3) { 
           let merged = false;
           for (let b of rawBoxes) {
-            // 水平合并容差恢复到 30，确保空格前后的字能连上
             if (x >= b.l - 30 && x <= b.r + 30 && y >= b.t - 20 && y <= b.b + 20) {
               b.l = Math.min(b.l, x); b.r = Math.max(b.r, x);
               b.t = Math.min(b.t, y); b.b = Math.max(b.b, y);
@@ -267,13 +233,11 @@ Page({
       const standardCharH = 18; 
       if (aspectRatio > 4 && adjustedH < standardCharH) { adjustedH = standardCharH; }
 
-      // --- 关键修正：黄金比例扩张 ---
       // 宽度左右各扩 12% 左右
       const pW = (rawW * 0.12) + 5; 
       const pH = (adjustedH * 0.4) + 5;
 
       // 宽度系数设为 1.8，左侧偏移设为 0.8
-      // 这样能确保第一个字左边不被切，最后一个字右边有余量
       return {
         x: ((b.l - pW * 0.8) / mapSize) * w,
         y: (((b.t + b.b) / 2 - (adjustedH / 2 + pH)) / mapSize) * h,
@@ -289,8 +253,7 @@ Page({
 
     ctx.fillStyle = 'black';
 
-    // --- 重新校准比例 (基于 1.8 倍扩张后的框) ---
-    // 此时文字约从框的 8% 处开始，总文字宽度约占框的 84%
+    // --- 校准比例 (基于 1.8 倍扩张后的框) ---
     const textStartRate = 0.08; 
     const textContentRate = 0.84; 
 
@@ -327,11 +290,11 @@ Page({
     const ctx = this.data.ctxs[index];
     const query = wx.createSelectorQuery();
     query.select(`#canvas-${index}`).boundingClientRect(rect => {
-      const x = (viewX / rect.width) * canvas.width;
-      const y = (viewY / rect.height) * canvas.height;
-      ctx.fillStyle = 'black';
-      const brush = canvas.width * 0.06;
-      ctx.fillRect(x - brush/2, y - brush/2, brush, brush);
+    const x = (viewX / rect.width) * canvas.width;
+    const y = (viewY / rect.height) * canvas.height;
+    ctx.fillStyle = 'black';
+    const brush = canvas.width * 0.06;
+    ctx.fillRect(x - brush/2, y - brush/2, brush, brush);
     }).exec();
   },
 
@@ -343,7 +306,7 @@ Page({
       itemColor: '#07c160',
       success: (res) => {
         if (res.tapIndex === 0) {
-          this.saveImage(); // 调用原来的单张保存
+          this.saveImage(); // 调用单张保存
         } else if (res.tapIndex === 1) {
           this.batchSave(); // 调用批量保存
         }
@@ -356,7 +319,7 @@ Page({
     
     wx.showLoading({ title: '准备批量导出...', mask: true });
 
-    // 1. 检查权限 (批量保存容易触发权限拦截，先检查一下)
+    // 检查权限 (批量保存容易触发权限拦截，先检查一下)
     try {
       for (let i = 0; i < imageList.length; i++) {
         wx.showLoading({ title: `正在保存第 ${i + 1}/${imageList.length} 张`, mask: true });
@@ -444,7 +407,6 @@ Page({
     let splitIdx = -1;
 
     // --- 3. 联动判定 ---
-    
     // A. 判定身份证/银行卡 (配置项: maskId)
     if (config.maskId && (idCardReg.test(text) || (text.length >= 15 && /\d{10,}/.test(text)) || bankReg.test(text))) {
       entityLabel = 'ID';
@@ -465,7 +427,7 @@ Page({
       if (addrLabels.some(l => text.includes(l))) entityLabel = 'ADDRESS';
     }
 
-    // --- 4. 确定打码起始点 (逻辑同前，保持不动) ---
+    // --- 4. 确定打码起始点 ---
     if (entityLabel) {
       const separators = ['：', ':', ' '];
       for (let sep of separators) {
